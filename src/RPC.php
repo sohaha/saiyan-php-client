@@ -11,7 +11,7 @@ class RPC
 
     private function __construct($addr, $timeout = 0)
     {
-        $this->addr = ("tcp://{$$addr}");
+        $this->addr = ("tcp://{$addr}");
         $this->connect();
         if ($timeout) {
             stream_set_timeout($this->conn, $timeout);
