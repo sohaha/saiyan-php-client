@@ -30,13 +30,21 @@ class Http
             'cookies' => Cfg::get('setCookie', []),
         ];
         foreach (Cfg::get('setHeader', []) as $header) {
-            $header = explode(':', $header);
+            $value = Z::arrayGet($header, 0, $header);
+            $replace = Z::arrayGet($header, 1, true);
+            $code = Z::arrayGet($header, 2);
+            if ($code) $result['status'] = $code;
+            $header = explode(':', $value);
             $k = array_shift($header);
             $c = trim(join(':', $header));
             if (!$c) {
-                if (!!preg_match('/HTTP\/1.1 ([\d]{3}) \w+/i', $k, $code)) {
-                    $result['status'] = $code[1];
+                if (!!preg_match('/HTTP\/[\d].[\d] ([\d]{3}) \w+/i', $k, $code)) {
+                    $result['status'] = (int)$code[1];
                 }
+                continue;
+            }
+            if (isset($result['headers'][$k]) && !$replace) {
+                $result['headers'][$k][] = trim($c);
                 continue;
             }
             $result['headers'][$k] = [trim($c)];
