@@ -9,20 +9,19 @@ use Zls;
 
 class Operation
 {
-
-    private $pidFile;
-    public function __construct()
+    public function pidPath()
     {
-        $this->pidFile = Z::realPathMkdir(Z::tempPath() . 'zlsphp', true, false, false) . 'saiyanServer-' . md5(ZLS_PATH) . '.pid';
+        $tempDirPath = Z::config()->getStorageDirPath();
+        return Z::realPathMkdir($tempDirPath . 'saiyan', true, false, false, false) . 'master.pid';
     }
 
     public function restart()
     {
-        $pid = file_get_contents($this->pidFile);
+        $pid = file_get_contents($this->pidPath());
         if ($pid) {
-            $cmd = "kill " . $pid;
+            $cmd = 'kill ' . $pid;
             if (Z::isWin()) {
-                $cmd = "taskkill /f /pid " . $pid;
+                $cmd = 'taskkill /f /pid ' . $pid;
             }
             Z::command($cmd, '', false);
         }
@@ -30,6 +29,6 @@ class Operation
 
     public function writePid($pid)
     {
-        return  @file_put_contents($this->pidFile, $pid);
+        return @file_put_contents($this->pidPath(), $pid);
     }
 }
