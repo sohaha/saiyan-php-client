@@ -2,6 +2,7 @@
 
 namespace Zls\Saiyan;
 
+use Exception;
 use Z;
 
 class Relay
@@ -26,6 +27,11 @@ class Relay
         $this->http = new Http();
     }
 
+    public function respond($content = [])
+    {
+        $this->send((string)@json_encode($content), Parse::PAYLOAD_CONTROL);
+    }
+
     public function send($payload, $flags = null)
     {
         $package = Parse::packMessage($payload, $flags);
@@ -38,16 +44,11 @@ class Relay
         return null;
     }
 
-    public function respond($content = [])
-    {
-        $this->send((string)@json_encode($content), Parse::PAYLOAD_CONTROL);
-    }
-
     public function receive(&$flags = null)
     {
         $data = Parse::prefix($this->in);
         if (is_string($data)) {
-            if($data ==='invalid prefix'){
+            if ($data === 'invalid prefix') {
                 return false;
             }
             return null;
@@ -68,10 +69,8 @@ class Relay
         }
         $adopt = $result !== '';
         if ($adopt && ($flags & Parse::PAYLOAD_EMPTY)) {
-            $data = @json_decode($result, true) ?: [];
-            if ($pid = Z::arrayGet($data, 'pid')) {
-                Z::factory('\Zls\Saiyan\Operation', true)->writePid($pid);
-            }
+            // $data = @json_decode($result, true) ?: [];
+            // $pid = Z::arrayGet($data, 'pid');
             $this->send($result, Parse::PAYLOAD_RAW);
             return null;
         }
@@ -93,7 +92,7 @@ class Relay
                 $this->http->setData($data);
                 return $this->receive($flags);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->send($e->getMessage(), Parse::PAYLOAD_CONTROL & Parse::PAYLOAD_ERROR);
             return null;
         }

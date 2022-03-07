@@ -15,5 +15,7 @@
       "Zls\\Saiyan\\": "src/"
     }
   },
-  "require": {}
+  "require": {
+    "zls/install": "*"
+  }
 }
