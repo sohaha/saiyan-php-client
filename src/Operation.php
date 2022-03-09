@@ -12,13 +12,17 @@ class Operation
 {
     public static function start($args)
     {
+        $port = (int)Z::getOpt("port", 8181);
+        if ($port <= 1) {
+            $port = 8181;
+        }
         $isSaiyan = Z::server('SAIYAN_VERSION');
         if ($isSaiyan) {
             self::run($args);
             return;
         }
         $bin = (new Bin())->path();
-        Z::command("{$bin} -D");
+        Z::command("{$bin} -D --port {$port}");
     }
 
     public static function run($args)

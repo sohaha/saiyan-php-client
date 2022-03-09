@@ -2,10 +2,6 @@
 
 namespace Zls\Saiyan\Command;
 
-use Zls;
-use Zls\Saiyan\Operation;
-use Zls\Saiyan\Parse;
-use Zls\Saiyan\Relay;
 use Z;
 use Zls\Command\Command;
 
@@ -15,7 +11,7 @@ class Saiyan extends Command
     {
         try {
             $active = Z::arrayGet($args, 2, 'help');
-            if (in_array($active,get_class_methods('Zls\Saiyan\Operation'),true)) {
+            if (in_array($active, get_class_methods('Zls\Saiyan\Operation'), true)) {
                 $tip = \Zls\Saiyan\Operation::$active($args);
                 if (!$tip) {
                     $this->printStrN($tip);
@@ -30,7 +26,9 @@ class Saiyan extends Command
 
     public function options()
     {
-        return [];
+        return [
+            '--port' => '8181',
+        ];
     }
 
     public function example()
